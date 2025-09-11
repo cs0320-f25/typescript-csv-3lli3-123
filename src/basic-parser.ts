@@ -1,6 +1,8 @@
 import * as fs from "fs";
 import * as readline from "readline";
 
+import {ZodSchema} from "zod";
+
 /**
  * This is a JSDoc comment. Similar to JavaDoc, it documents a public-facing
  * function for others to use. Most modern editors will show the comment when 
@@ -14,7 +16,7 @@ import * as readline from "readline";
  * @param path The path to the file being loaded.
  * @returns a "promise" to produce a 2-d array of cell values
  */
-export async function parseCSV(path: string): Promise<string[][]> {
+export async function parseCSV<T>(path: string, schema: ZodSchema<T>): Promise<T[] | string[][]> {
   // This initial block of code reads from a file in Node.js. The "rl"
   // value can be iterated over in a "for" loop. 
   const fileStream = fs.createReadStream(path);
@@ -23,15 +25,54 @@ export async function parseCSV(path: string): Promise<string[][]> {
     crlfDelay: Infinity, // handle different line endings
   });
   
-  // Create an empty array to hold the results
-  let result = []
+  // if no schema is provided meaning undefined was passed in, just return arrays of strings
+  if (!schema) {
+  // Create an empty array of type T to hold the results
+  const result: string[][] = [];
+  
+  // loop over each line in the file
+  for await (const line of rl) {
+    // split the line into values based on commas, and trim whitespace
+    const values = line.split(",").map((v) => v.trim());
+    result.push(values);
+  }
+
+  // return the 2-d array of strings
+  return result;
+}
+   else {
+  // if a schema is provided, we will return parsed objects of type T
+
+  // Create an empty array of type T to hold the results
+  const result: T[] = [];
+
+  // initalize the header array to null
+  let headers: string[] | null = null;
   
   // We add the "await" here because file I/O is asynchronous. 
   // We need to force TypeScript to _wait_ for a row before moving on. 
   // More on this in class soon!
   for await (const line of rl) {
     const values = line.split(",").map((v) => v.trim());
-    result.push(values)
+
+    // if the line is the header, then set the headers variable
+    if (!headers) {
+      headers = values;
+    }
+    
+    // create a row object mapping headers to values
+    const rowObj = Object.fromEntries(headers.map((h, i) => [h, values[i]]));
+
+    // add the parsed object to the result array, iff valid object
+    try {
+      // validate and transform the row object using the schema
+      const parsed = schema.parse(rowObj);
+      result.push(parsed);
+    } catch (e) {
+      // if parsing fails, throw an error with details
+      throw new Error(`Error parsing row: ${JSON.stringify(rowObj)}. Details: ${(e as Error).message}`);
+    }
   }
-  return result
+    return result
+  }
 }
