@@ -7,6 +7,7 @@ import { parseCSV } from "../src/basic-parser";
 const HUMAN_CSV_PATH = path.join(__dirname, "../data/humans.csv");
 const INCONSISTENT_DATATYPE_CSV_PATH = path .join(__dirname, "../data/different-datatype.csv");
 const INCONSISTENT_COLUMNS_CSV_PATH = path.join(__dirname, "../data/inconsistent-columns.csv");
+const EMPTY_CSV_PATH = path.join(__dirname, "../data/empty.csv");
 
 const FOOD_CSV_PATH = path.join(__dirname, "../data/food.csv");
 const FAULTY_FOOD_CSV_PATH = path.join(__dirname, "../data/faulty-boolean-food.csv");
@@ -48,3 +49,4 @@ test("parseCSV with foodschema yields objects", async () => {
 test("parseCSV with foodschema throws error on faulty boolean", async () => {
   await expect(parseCSV(FAULTY_FOOD_CSV_PATH, FoodSchema)).rejects.toThrow("Error parsing row");
 });
+
