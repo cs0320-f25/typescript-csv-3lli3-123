@@ -16,7 +16,7 @@ import {ZodSchema} from "zod";
  * @param path The path to the file being loaded.
  * @returns a "promise" to produce a 2-d array of cell values
  */
-export async function parseCSV<T>(path: string, schema: ZodSchema<T>): Promise<T[] | string[][]> {
+export async function parseCSV<T>(path: string, schema?: ZodSchema<T>): Promise<T[] | string[][]> {
   // This initial block of code reads from a file in Node.js. The "rl"
   // value can be iterated over in a "for" loop. 
   const fileStream = fs.createReadStream(path);
@@ -40,8 +40,9 @@ export async function parseCSV<T>(path: string, schema: ZodSchema<T>): Promise<T
   // return the 2-d array of strings
   return result;
 }
-   else {
-  // if a schema is provided, we will return parsed objects of type T
+
+// if a schema is provided, we will return parsed objects of type T
+else {
 
   // Create an empty array of type T to hold the results
   const result: T[] = [];
@@ -53,24 +54,26 @@ export async function parseCSV<T>(path: string, schema: ZodSchema<T>): Promise<T
   // We need to force TypeScript to _wait_ for a row before moving on. 
   // More on this in class soon!
   for await (const line of rl) {
+
+    // obtain an array of values from the line
     const values = line.split(",").map((v) => v.trim());
 
     // if the line is the header, then set the headers variable
     if (!headers) {
       headers = values;
+
+      // skip the rest of the loop for this iteration
+      continue;
     }
-    
-    // create a row object mapping headers to values
-    const rowObj = Object.fromEntries(headers.map((h, i) => [h, values[i]]));
 
     // add the parsed object to the result array, iff valid object
     try {
-      // validate and transform the row object using the schema
-      const parsed = schema.parse(rowObj);
+      // validate and transform the values array using the schema
+      const parsed = schema.parse(values);
       result.push(parsed);
     } catch (e) {
       // if parsing fails, throw an error with details
-      throw new Error(`Error parsing row: ${JSON.stringify(rowObj)}. Details: ${(e as Error).message}`);
+      throw new Error(`Error parsing row: ${JSON.stringify(values)}. Details: ${(e as Error).message}`);
     }
   }
     return result

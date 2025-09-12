@@ -1,5 +1,5 @@
 import { parseCSV } from "./basic-parser";
-import { PersonSchema } from "./schema";
+import { PersonSchema } from "./person-schema";
 
 /*
   Example of how to run the parser outside of a test suite.
