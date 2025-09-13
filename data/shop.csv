@@ -1,0 +1,4 @@
+name,weight,transportable,color
+lamp,5,true,gold
+desk,10,false,brown
+chair,7,true,pink

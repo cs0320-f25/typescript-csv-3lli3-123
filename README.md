@@ -46,7 +46,7 @@ Even if the values are separated by other characters, such as semicolons or colo
 
 To satisfy all the requirements, I decided to have my parser accept a ZodSchema of any type, but made that extra argument optional (via the ? in the method header) so that I could also ensure that the parser just created a 2D string array if an undefined (or nothing at all) was passed instead of a schema. From there, my method split into two scenarios: with or without a schema. Without basically involved rote transcription of each line of the CSV into an array of strings, while with involved passing in that string array to the schema, which I needed to convert the arrays into actual objects. Within my schemas, I utilized the coerce method for numbers to manipulate string versions of numbers to become actual numbers. I also wrote a helper method when coercing booleans that in essence rejecting any value that wasn’t either true or false, because the coerce boolean method was being faulty.
 
-### 1340 Supplement --All my answers are in a separate pdf!
+### 1340 Supplement All my answers are in a separate pdf!
 
 - #### 1. Correctness
 
@@ -62,4 +62,4 @@ To satisfy all the requirements, I decided to have my parser accept a ZodSchema 
 #### Collaborators (cslogins of anyone you worked with on this project and/or generative AI): Used copilot, link to prompts here: https://docs.google.com/document/d/1Z2cfTr2si2KPRCylLTHInCDs2KrloMZZBXQP96BogQY/edit?usp=sharing
 
 #### Total estimated time it took to complete project: 8 hrs
-#### Link to GitHub Repo:  
+#### Link to GitHub Repo: https://github.com/cs0320-f25/typescript-csv-3lli3-123 
